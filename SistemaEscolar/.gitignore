@@ -1,0 +1,27 @@
+# Maven
+target/
+
+# Java compilado
+*.class
+
+# Eclipse
+.metadata/
+.settings/
+
+# Build
+bin/
+
+# Logs
+*.log
+
+# Tomcat
+work/
+temp/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Configurações sensíveis
+.env
+/build/
