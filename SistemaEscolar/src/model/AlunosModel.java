@@ -37,6 +37,7 @@ public class AlunosModel {
 		
 		int linhas = stmt.executeUpdate();
 		
+		
 		stmt.close();
         conn.close();
 
