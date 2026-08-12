@@ -15,6 +15,7 @@ import util.Conexao;
 
 public class AlunosModel {
 	
+	//Atualiza os dados pessoais do Aluno
 	public boolean updateAluno( 
 				int id,
 				String nome,
@@ -36,7 +37,6 @@ public class AlunosModel {
 		stmt.setInt(6, id);
 		
 		int linhas = stmt.executeUpdate();
-		
 		
 		stmt.close();
         conn.close();
