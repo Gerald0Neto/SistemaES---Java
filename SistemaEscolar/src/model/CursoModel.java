@@ -19,6 +19,7 @@ public class CursoModel {
 		String sql = "SELECT * FROM curso";
 		Connection conn = Conexao.conectar();
 		PreparedStatement stmt = conn.prepareStatement(sql);
+		
 
 		ResultSet rs = stmt.executeQuery();
 		
