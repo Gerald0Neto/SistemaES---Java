@@ -1,831 +1,652 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
+<%@ page language="java"
+    contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+
+<%@ page import="java.util.List" %>
+<%@ page import="Classes.Curso" %>
+
 <%
     if (session.getAttribute("idusuario") == null) {
         response.sendRedirect("index.jsp");
         return;
     }
 %>
+
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
+
 <head>
-<meta charset="ISO-8859-1">
-<title>Gest�o Escolar - Cursos</title>
 
-<style>
+    <meta charset="UTF-8">
 
-      * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-      }
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
+    <link rel="stylesheet" href="css/alunos.css">
 
-      body {
-          font-family: Arial, Helvetica, sans-serif;
+    <title>Gestão Escolar - Cursos</title>
 
-          background: #f5f7fb;
-
-          color: #1f2937;
-      }
-
-
-      /* =========================
-         MENU
-      ========================= */
-
-      .topbar {
-
-          height: 70px;
-
-          background: #ffffff;
-
-          border-bottom: 1px solid #e5e7eb;
-
-          display: flex;
-
-          align-items: center;
-
-          padding: 0 35px;
-
-          position: sticky;
-
-          top: 0;
-
-          z-index: 100;
-      }
-
-
-      .logo {
-
-          font-size: 21px;
-
-          font-weight: 700;
-
-          color: #2563eb;
-
-          margin-right: 50px;
-      }
-
-
-     .menu {
-    display: flex;
-    gap: 8px;
-    height: 100%;
-
-    /* Centraliza o menu no topo */
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.menu a {
-    text-decoration: none;
-
-    color: #6b7280;
-
-    font-size: 15px;
-
-    font-weight: 600;
-
-    padding: 0 20px;
-
-    height: 100%;
-
-    display: flex;
-
-    align-items: center;
-
-    position: relative;
-}
-
-.menu a:hover {
-    color: #2563eb;
-}
-
-.menu a.active {
-    color: #2563eb;
-}
-
-.menu a.active::after {
-    content: "";
-
-    position: absolute;
-
-    bottom: 0;
-
-    left: 20px;
-
-    right: 20px;
-
-    height: 3px;
-
-    background: #2563eb;
-
-    border-radius: 3px 3px 0 0;
-}
-
-
-
-.topbar {
-    height: 70px;
-
-    background: #ffffff;
-
-    border-bottom: 1px solid #e5e7eb;
-
-    display: flex;
-
-    align-items: center;
-
-    padding: 0 35px;
-
-    position: sticky;
-
-    top: 0;
-
-    z-index: 100;
-}
-
-
-      /* =========================
-         CONTAINER
-      ========================= */
-
-      .container {
-
-          max-width: 1250px;
-
-          margin: 0 auto;
-
-          padding: 35px 25px 60px;
-      }
-
-
-      .page-header {
-
-          display: flex;
-
-          justify-content: space-between;
-
-          align-items: center;
-
-          margin-bottom: 28px;
-      }
-
-
-      .page-title h1 {
-
-          font-size: 28px;
-
-          margin-bottom: 6px;
-
-          color: #111827;
-      }
-
-
-      .page-title p {
-
-          color: #6b7280;
-
-          font-size: 14px;
-      }
-
-
-      /* =========================
-         BOT�ES
-      ========================= */
-
-      .btn {
-
-          display: inline-flex;
-
-          align-items: center;
-
-          justify-content: center;
-
-          text-decoration: none;
-
-          border: none;
-
-          cursor: pointer;
-
-          border-radius: 8px;
-
-          padding: 11px 17px;
-
-          font-size: 14px;
-
-          font-weight: 600;
-      }
-
-
-      .btn-primary {
-
-          background: #2563eb;
-
-          color: white;
-      }
-
-
-      .btn-primary:hover {
-
-          background: #1d4ed8;
-      }
-
-
-      /* =========================
-         CARDS
-      ========================= */
-
-      .card {
-
-          background: #ffffff;
-
-          border: 1px solid #e5e7eb;
-
-          border-radius: 12px;
-
-          box-shadow:
-              0 2px 8px rgba(0,0,0,0.03);
-      }
-
-
-      /* =========================
-         PESQUISA
-      ========================= */
-
-      .filters {
-
-          padding: 20px;
-
-          margin-bottom: 20px;
-      }
-
-
-      .filters-grid {
-
-          display: grid;
-
-          grid-template-columns:
-              1fr 1fr auto;
-
-          gap: 15px;
-
-          align-items: end;
-      }
-
-
-      .form-group {
-
-          display: flex;
-
-          flex-direction: column;
-
-          gap: 7px;
-      }
-
-
-      .form-group label {
-
-          font-size: 13px;
-
-          font-weight: 600;
-
-          color: #374151;
-      }
-
-
-      input,
-      select {
-
-          width: 100%;
-
-          height: 42px;
-
-          border: 1px solid #d1d5db;
-
-          border-radius: 7px;
-
-          padding: 0 12px;
-
-          outline: none;
-
-          font-size: 14px;
-
-          background: white;
-      }
-
-
-      input:focus,
-      select:focus {
-
-          border-color: #2563eb;
-      }
-
-
-      .btn-filter {
-
-          height: 42px;
-
-          background: #111827;
-
-          color: white;
-      }
-
-
-      /* =========================
-         TABELA
-      ========================= */
-
-      .table-card {
-
-          overflow: hidden;
-      }
-
-
-      .table-header {
-
-          padding: 18px 20px;
-
-          border-bottom: 1px solid #e5e7eb;
-
-          display: flex;
-
-          justify-content: space-between;
-
-          align-items: center;
-      }
-
-
-      .table-header h2 {
-
-          font-size: 17px;
-      }
-
-
-      .total {
-
-          font-size: 13px;
-
-          color: #6b7280;
-      }
-
-
-      .table-wrapper {
-
-          overflow-x: auto;
-      }
-
-
-      table {
-
-          width: 100%;
-
-          border-collapse: collapse;
-
-          min-width: 850px;
-      }
-
-
-      th {
-
-          background: #f9fafb;
-
-          color: #6b7280;
-
-          font-size: 12px;
-
-          text-transform: uppercase;
-
-          letter-spacing: 0.4px;
-
-          text-align: left;
-
-          padding: 14px 20px;
-
-          border-bottom: 1px solid #e5e7eb;
-      }
-
-
-      td {
-
-          padding: 16px 20px;
-
-          border-bottom: 1px solid #f0f0f0;
-
-          font-size: 14px;
-      }
-
-
-      tbody tr:hover {
-
-          background: #fafafa;
-      }
-
-
-      /* =========================
-         ALUNO
-      ========================= */
-
-      .student {
-
-          display: flex;
-
-          align-items: center;
-
-          gap: 12px;
-      }
-
-
-      .avatar {
-
-          width: 40px;
-
-          height: 40px;
-
-          border-radius: 50%;
-
-          background: #dbeafe;
-
-          color: #2563eb;
-
-          display: flex;
-
-          align-items: center;
-
-          justify-content: center;
-
-          font-weight: 700;
-      }
-
-
-      .student-name {
-
-          font-weight: 600;
-
-          color: #111827;
-      }
-
-
-      .student-id {
-
-          color: #9ca3af;
-
-          font-size: 12px;
-
-          margin-top: 3px;
-      }
-
-
-      /* =========================
-         STATUS
-      ========================= */
-
-      .status {
-
-          display: inline-flex;
-
-          align-items: center;
-
-          gap: 6px;
-
-          padding: 5px 10px;
-
-          border-radius: 20px;
-
-          font-size: 12px;
-
-          font-weight: 600;
-      }
-
-
-      .status.active {
-
-          background: #dcfce7;
-
-          color: #15803d;
-      }
-
-
-      .status-dot {
-
-          width: 6px;
-
-          height: 6px;
-
-          border-radius: 50%;
-
-          background: currentColor;
-      }
-
-
-      /* =========================
-         A��ES
-      ========================= */
-
-      .actions {
-
-          display: flex;
-
-          gap: 6px;
-      }
-
-
-      .action-btn {
-
-          width: 34px;
-
-          height: 34px;
-
-          border: 1px solid #e5e7eb;
-
-          background: white;
-
-          border-radius: 7px;
-
-          text-decoration: none;
-
-          display: inline-flex;
-
-          align-items: center;
-
-          justify-content: center;
-
-          font-size: 14px;
-      }
-
-
-      .action-btn:hover {
-
-          background: #f3f4f6;
-      }
-
-
-      /* =========================
-         MODAL SEM JAVASCRIPT
-      ========================= */
-
-      .modal-checkbox {
-
-          display: none;
-      }
-
-
-      .modal {
-
-          position: fixed;
-
-          inset: 0;
-
-          background: rgba(15, 23, 42, 0.55);
-
-          display: flex;
-
-          align-items: center;
-
-          justify-content: center;
-
-          padding: 20px;
-
-          opacity: 0;
-
-          visibility: hidden;
-
-          pointer-events: none;
-
-          transition: 0.2s;
-
-          z-index: 500;
-      }
-
-
-      .modal-checkbox:checked + .modal {
-
-          opacity: 1;
-
-          visibility: visible;
-
-          pointer-events: auto;
-      }
-
-
-      .modal-box {
-
-          width: 100%;
-
-          max-width: 650px;
-
-          background: #ffffff;
-
-          border-radius: 14px;
-
-          box-shadow:
-              0 25px 70px rgba(0,0,0,0.25);
-
-          overflow: hidden;
-      }
-
-
-      /* =========================
-         MODAL HEADER
-      ========================= */
-
-      .modal-header {
-
-          padding: 20px 24px;
-
-          border-bottom: 1px solid #e5e7eb;
-
-          display: flex;
-
-          align-items: center;
-
-          justify-content: space-between;
-      }
-
-
-      .modal-header h2 {
-
-          font-size: 19px;
-
-          color: #111827;
-      }
-
-
-      .modal-close {
-
-          width: 34px;
-
-          height: 34px;
-
-          border-radius: 7px;
-
-          display: flex;
-
-          align-items: center;
-
-          justify-content: center;
-
-          cursor: pointer;
-
-          font-size: 22px;
-
-          color: #6b7280;
-
-          background: #f3f4f6;
-      }
-
-
-      .modal-close:hover {
-
-          background: #e5e7eb;
-
-          color: #111827;
-      }
-
-
-      /* =========================
-         MODAL BODY
-      ========================= */
-
-      .modal-body {
-
-          padding: 24px;
-      }
-
-
-      .form-grid {
-
-          display: grid;
-
-          grid-template-columns: 1fr 1fr;
-
-          gap: 18px;
-      }
-
-
-      .form-full {
-
-          grid-column: 1 / -1;
-      }
-
-
-      /* =========================
-         MODAL FOOTER
-      ========================= */
-
-      .modal-footer {
-
-          padding: 18px 24px;
-
-          border-top: 1px solid #e5e7eb;
-
-          display: flex;
-
-          justify-content: flex-end;
-
-          gap: 10px;
-      }
-
-
-      .btn-cancel {
-
-          background: #f3f4f6;
-
-          color: #374151;
-      }
-
-
-      .btn-cancel:hover {
-
-          background: #e5e7eb;
-      }
-
-
-      /* =========================
-         RESPONSIVO
-      ========================= */
-
-      @media (max-width: 800px) {
-
-          .topbar {
-
-              padding: 0 15px;
-          }
-
-
-          .logo {
-
-              margin-right: 15px;
-
-              font-size: 18px;
-          }
-
-
-          .menu a {
-
-              padding: 0 10px;
-
-              font-size: 13px;
-          }
-
-
-          .menu a.active::after {
-
-              left: 10px;
-
-              right: 10px;
-          }
-
-
-          .container {
-
-              padding: 25px 15px;
-          }
-
-
-          .page-header {
-
-              align-items: flex-start;
-
-              gap: 15px;
-
-              flex-direction: column;
-          }
-
-
-          .filters-grid {
-
-              grid-template-columns: 1fr;
-          }
-
-
-          .form-grid {
-
-              grid-template-columns: 1fr;
-          }
-
-
-          .form-full {
-
-              grid-column: auto;
-          }
-      }
-
-</style>
 </head>
+
 <body>
 
-	<header class="topbar">
-	    <nav class="menu">
-	        <a href="AlunosController" > Alunos </a>	
-	        <a href="cursos.jsp" class="active"> Cursos </a>
-	        <a href="matriculas.jsp"> Matr�culas </a>
-	    </nav>
-	</header>
-	
-	
-	
+    <!-- =========================
+         MENSAGEM
+    ========================= -->
+
+    <h5 class="mt-3 text-danger text-center" style="color:red;">
+        <%= request.getAttribute("msg") != null
+            ? request.getAttribute("msg")
+            : "" %>
+    </h5>
+
+
+    <!-- =========================
+         MENU
+    ========================= -->
+
+    <header class="topbar">
+
+        <nav class="menu">
+
+            <a href="AlunosController">
+                Alunos
+            </a>
+
+            <a href="CursoController" class="active">
+                Cursos
+            </a>
+
+            <a href="matriculas.jsp">
+                Matrículas
+            </a>
+
+        </nav>
+
+    </header>
+
+
+    <!-- =========================
+         CONTEÚDO
+    ========================= -->
+
+    <main class="container">
+
+
+        <!-- CABEÇALHO -->
+
+        <div class="page-header">
+
+            <div class="page-title">
+
+                <h1>
+                    Cursos
+                </h1>
+
+                <p>
+                    Gerencie os cursos cadastrados no sistema.
+                </p>
+
+            </div>
+
+
+            <!-- ABRIR MODAL -->
+
+            <label
+                for="modalNovoCurso"
+                class="btn btn-primary"
+            >
+                + Novo curso
+            </label>
+
+        </div>
+
+
+        <!-- =========================
+             PESQUISA
+        ========================= -->
+
+        <div class="card filters">
+
+            <form
+                action="CursoController"
+                method="get"
+            >
+
+                <input
+                    type="hidden"
+                    name="item"
+                    value="pesquisar"
+                >
+
+
+                <div class="filters-grid">
+
+
+                    <!-- NOME -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Nome do curso
+                        </label>
+
+                        <input
+                            type="text"
+                            name="nome"
+                            placeholder="Digite o nome do curso..."
+                        >
+
+                    </div>
+
+
+                    <!-- STATUS -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Status
+                        </label>
+
+                        <select name="status">
+
+                            <option value="">
+                                Todos
+                            </option>
+
+                            <option value="1">
+                                Ativos
+                            </option>
+
+                            <option value="0">
+                                Desativados
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-filter"
+                    >
+                        Pesquisar
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        <!-- =========================
+             LISTA
+        ========================= -->
+
+        <div class="card table-card">
+
+
+            <div class="table-header">
+
+                <h2>
+                    Lista de cursos
+                </h2>
+
+                <span class="total">
+
+                    <%
+                        List<Curso> cursos = (List<Curso>) request.getAttribute("cursos");
+
+                        int totalCursos = cursos != null ? cursos.size() : 0;
+                    %>
+
+                    <%= totalCursos %> curso(s)
+
+                </span>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Curso
+                            </th>
+
+                            <th>
+                                Descrição
+                            </th>
+
+                            <th>
+                                Carga horária
+                            </th>
+
+                            <th>
+                                Valor
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+                       
+
+                            <th>
+                                Ações
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                    <%
+                        if (cursos != null && !cursos.isEmpty()) {
+
+                            for (Curso curso : cursos) {
+
+                                String nomeCurso = curso.getNome();
+
+                                String inicial =
+                                    nomeCurso != null && !nomeCurso.isEmpty()
+                                    ? nomeCurso.substring(0, 1).toUpperCase()
+                                    : "?";
+
+                                Boolean statusCurso = curso.getAtivo();
+
+                                Boolean novoStatus = statusCurso != null && !statusCurso;
+                    %>
+
+
+                        <tr>
+
+
+                            <!-- CURSO -->
+
+                            <td>
+
+                                <div class="student">
+
+                                    <div class="avatar">
+                                        <%= inicial %>
+                                    </div>
+
+                                    <div>
+
+                                        <div class="student-name">
+                                            <%= curso.getNome() %>
+                                        </div>
+
+                                        <div class="student-id">
+                                            ID #<%= curso.getId() %>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- DESCRIÇÃO -->
+
+                            <td>
+
+                                <%
+                                    String descricao =
+                                        curso.getDescricao();
+
+                                    if (descricao != null
+                                        && descricao.length() > 60) {
+
+                                        descricao =
+                                            descricao.substring(0, 60)
+                                            + "...";
+                                    }
+                                %>
+
+                                <%= descricao != null
+                                    ? descricao
+                                    : "Sem descrição" %>
+
+                            </td>
+
+
+                            <!-- CARGA HORÁRIA -->
+
+                            <td>
+
+                                <%= curso.getCarga_horaria() %> horas
+
+                            </td>
+
+
+                            <!-- VALOR -->
+
+                            <td>R$<%= curso.getValor() %></td>
+
+
+                            <!-- STATUS -->
+
+                            <td>
+
+                                <span class="status active">
+
+                                    <span class="status-dot"></span>
+
+                                    <% if (statusCurso) { %>
+
+									    ATIVO
+									
+									<% } else { %>
+									
+									    DESATIVADO
+									
+									<% } %>
+
+                                </span>
+
+                            </td>
+
+
+                            <!-- DATA -->
+
+                    
+
+                            <!-- AÇÕES -->
+
+                            <td>
+
+                                <div class="actions">
+
+
+                                    <!-- EDITAR -->
+
+                                    <a
+                                        href="curso-editar.jsp?id=<%= curso.getId() %>"
+                                        class="action-btn"
+                                        title="Editar"
+                                    >
+                                        ✏️
+                                    </a>
+
+
+                                    <!-- STATUS -->
+
+                                    <a
+                                        href="CursosController?item=statusCurso&id=<%= curso.getId() %>&status=<%= novoStatus %>"
+                                        class="action-btn"
+                                        title="Ativar/Desativar"
+                                        onclick="return confirm('Deseja realmente mudar o status do curso?');"
+                                    >
+
+                                        <% if (statusCurso) { %>
+
+                                            ✕
+
+                                        <% } else { %>
+
+                                            ✓
+
+                                        <% } %>
+
+                                    </a>
+
+
+                                    <!-- EXCLUIR -->
+
+                                    <a
+                                        href="CursosController?item=delete&id=<%= curso.getId() %>"
+                                        class="action-btn"
+                                        title="Excluir"
+                                        onclick="return confirm('Deseja realmente excluir este curso?');"
+                                    >
+                                        🗑️
+                                    </a>
+
+
+                                </div>
+
+                            </td>
+
+
+                        </tr>
+
+
+                    <%
+                            }
+
+                        } else {
+                    %>
+
+
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                style="text-align: center; padding: 40px;"
+                            >
+
+                                <div
+                                    style="font-size: 35px; margin-bottom: 10px;"
+                                >
+                                    📚
+                                </div>
+
+                                <div
+                                    style="font-weight: 600; color: #374151;"
+                                >
+                                    Nenhum curso encontrado
+                                </div>
+
+                                <div
+                                    style="
+                                        font-size: 13px;
+                                        color: #9ca3af;
+                                        margin-top: 5px;
+                                    "
+                                >
+                                    Cadastre um novo curso para começar.
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+
+                    <%
+                        }
+                    %>
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         MODAL NOVO CURSO
+         SEM JAVASCRIPT
+    ===================================================== -->
+
+    <input
+        type="checkbox"
+        id="modalNovoCurso"
+        class="modal-checkbox"
+    >
+
+
+    <div class="modal">
+
+        <div class="modal-box">
+
+
+            <!-- HEADER -->
+
+            <div class="modal-header">
+
+                <h2>
+                    Cadastrar novo curso
+                </h2>
+
+                <label
+                    for="modalNovoCurso"
+                    class="modal-close"
+                >
+                    ×
+                </label>
+
+            </div>
+
+
+            <!-- FORMULÁRIO -->
+
+            <form
+                action="CursosController"
+                method="post"
+            >
+
+                <input
+                    type="hidden"
+                    name="cursoCadastra"
+                    value="cadastraCurso"
+                >
+
+
+                <div class="modal-body">
+
+                    <div class="form-grid">
+
+
+                        <!-- NOME -->
+
+                        <div class="form-group form-full">
+
+                            <label>
+                                Nome do curso
+                            </label>
+
+                            <input
+                                type="text"
+                                name="nome"
+                                placeholder="Digite o nome do curso"
+                                maxlength="150"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- DESCRIÇÃO -->
+
+                        <div class="form-group form-full">
+
+                            <label>
+                                Descrição
+                            </label>
+
+                            <textarea
+                                name="descricao"
+                                placeholder="Digite a descrição do curso..."
+                                rows="4"
+                            ></textarea>
+
+                        </div>
+
+
+                        <!-- CARGA HORÁRIA -->
+
+                        <div class="form-group">
+
+                            <label>
+                                Carga horária
+                            </label>
+
+                            <input
+                                type="number"
+                                name="cargaHoraria"
+                                placeholder="Ex.: 360"
+                                min="1"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- VALOR -->
+
+                        <div class="form-group">
+
+                            <label>
+                                Valor
+                            </label>
+
+                            <input
+                                type="number"
+                                name="valor"
+                                placeholder="0,00"
+                                min="0"
+                                step="0.01"
+                                required
+                            >
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- FOOTER -->
+
+                <div class="modal-footer">
+
+
+                    <label
+                        for="modalNovoCurso"
+                        class="btn btn-cancel"
+                    >
+                        Cancelar
+                    </label>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Cadastrar curso
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+    </div>
+
+
 </body>
+
 </html>

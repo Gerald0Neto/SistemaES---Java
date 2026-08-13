@@ -44,7 +44,7 @@
         >
             Alunos
         </a>
-        <a href="cursos.jsp">
+        <a href="CursoController">
             Cursos
         </a>
         <a href="matriculas.jsp">
