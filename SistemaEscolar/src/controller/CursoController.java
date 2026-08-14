@@ -25,9 +25,6 @@ public class CursoController extends HttpServlet {
         cursoService = new CursoService();
     }
 
-    // =========================================================
-    // GET
-    // =========================================================
 
     @Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -52,10 +49,6 @@ public class CursoController extends HttpServlet {
         }
     }
 
-    // =========================================================
-    // POST
-    // =========================================================
-
     @Override
     protected void doPost(
             HttpServletRequest request,
@@ -78,9 +71,13 @@ public class CursoController extends HttpServlet {
         }
     }
 
-    // =========================================================
-    // MÉTODOS DO CONTROLLER
-    // =========================================================
+    /* 
+      
+      =========================================================
+     					MÉTODOS DO CONTROLLER
+       ========================================================
+     
+    */
 
     private void listar(
             HttpServletRequest request,
@@ -93,8 +90,7 @@ public class CursoController extends HttpServlet {
 
             request.setAttribute("cursos", cursos);
 
-            request.getRequestDispatcher("cursos.jsp")
-                   .forward(request, response);
+            request.getRequestDispatcher("cursos.jsp").forward(request, response);
 
         } catch (SQLException e) {
 
@@ -154,8 +150,7 @@ public class CursoController extends HttpServlet {
                 );
             }
 
-            request.getRequestDispatcher("cursos.jsp")
-                   .forward(request, response);
+            request.getRequestDispatcher("cursos.jsp").forward(request, response);
 
         } catch (SQLException e) {
 
