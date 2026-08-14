@@ -372,19 +372,19 @@
 
                                     <!-- EDITAR -->
 
-                                    <a
-                                        href="curso-editar.jsp?id=<%= curso.getId() %>"
-                                        class="action-btn"
-                                        title="Editar"
-                                    >
-                                        ✏️
-                                    </a>
+                                   <label
+									    for="modalEditarCurso<%= curso.getId() %>"
+									    class="action-btn"
+									    title="Editar"
+									>
+									    ✏️
+									</label>
 
 
                                     <!-- STATUS -->
 
                                     <a
-                                        href="CursosController?item=statusCurso&id=<%= curso.getId() %>&status=<%= novoStatus %>"
+                                        href="CursoController?item=statusCurso&id=<%= curso.getId() %>&status=<%= novoStatus %>"
                                         class="action-btn"
                                         title="Ativar/Desativar"
                                         onclick="return confirm('Deseja realmente mudar o status do curso?');"
@@ -406,7 +406,7 @@
                                     <!-- EXCLUIR -->
 
                                     <a
-                                        href="CursosController?item=delete&id=<%= curso.getId() %>"
+                                        href="CursoController?item=delete&id=<%= curso.getId() %>"
                                         class="action-btn"
                                         title="Excluir"
                                         onclick="return confirm('Deseja realmente excluir este curso?');"
@@ -421,7 +421,152 @@
 
 
                         </tr>
-
+						<input
+							    type="checkbox"
+							    id="modalEditarCurso<%= curso.getId() %>"
+							    class="modal-checkbox"
+							>
+							
+						<div class="modal">
+							
+							    <div class="modal-box">
+							
+							        <div class="modal-header">
+							
+							            <h2>
+							                Editar curso
+							            </h2>
+							
+							            <label
+							                for="modalEditarCurso<%= curso.getId() %>"
+							                class="modal-close"
+							            >
+							                ×
+							            </label>
+							
+							        </div>
+							
+							        <form
+							            action="CursoController"
+							            method="post"
+							        >
+							
+							            <input
+							                type="hidden"
+							                name="item"
+							                value="editarCurso"
+							            >
+							
+							            <input
+							                type="hidden"
+							                name="id"
+							                value="<%= curso.getId() %>"
+							            >
+							
+							            <div class="modal-body">
+							
+							                <div class="form-grid">
+							
+							                    <!-- NOME -->
+							
+							                    <div class="form-group form-full">
+							
+							                        <label>
+							                            Nome do curso
+							                        </label>
+							
+							                        <input
+							                            type="text"
+							                            name="nome"
+							                            value="<%= curso.getNome() %>"
+							                            maxlength="150"
+							                            required
+							                        >
+							
+							                    </div>
+							
+							
+							                    <!-- DESCRIÇÃO -->
+							
+							                    <div class="form-group form-full">
+							
+							                        <label>
+							                            Descrição
+							                        </label>
+							
+							                        <textarea
+							                            name="descricao"
+							                            rows="4"
+							                        ><%= curso.getDescricao() != null
+							                            ? curso.getDescricao()
+							                            : "" %></textarea>
+							
+							                    </div>
+							
+							
+							                    <!-- CARGA HORÁRIA -->
+							
+							                    <div class="form-group">
+							
+							                        <label>
+							                            Carga horária
+							                        </label>
+							
+							                        <input
+							                            type="text"
+							                            name="cargaHoraria"
+							                            value="<%= curso.getCarga_horaria() %>"
+							                            required
+							                        >
+							
+							                    </div>
+							
+							
+							                    <!-- VALOR -->
+							
+							                    <div class="form-group">
+							
+							                        <label>
+							                            Valor
+							                        </label>
+							
+							                        <input
+							                            type="text"
+							                            name="valor"
+							                            value="<%= curso.getValor() %>"
+							                            required
+							                        >
+							
+							                    </div>
+							
+							                </div>
+							
+							            </div>
+							
+							
+							            <div class="modal-footer">
+							
+							                <label
+							                    for="modalEditarCurso<%= curso.getId() %>"
+							                    class="btn btn-cancel"
+							                >
+							                    Cancelar
+							                </label>
+							
+							                <button
+							                    type="submit"
+							                    class="btn btn-primary"
+							                >
+							                    Salvar alterações
+							                </button>
+							
+							            </div>
+							
+							        </form>
+							
+							    </div>
+							
+							</div>	
 
                     <%
                             }
@@ -519,13 +664,13 @@
             <!-- FORMULÁRIO -->
 
             <form
-                action="CursosController"
+                action="CursoController"
                 method="post"
             >
 
                 <input
                     type="hidden"
-                    name="cursoCadastra"
+                    name="item"
                     value="cadastraCurso"
                 >
 
@@ -580,7 +725,7 @@
                             </label>
 
                             <input
-                                type="number"
+                                type="text"
                                 name="cargaHoraria"
                                 placeholder="Ex.: 360"
                                 min="1"
@@ -599,7 +744,7 @@
                             </label>
 
                             <input
-                                type="number"
+                                type="text"
                                 name="valor"
                                 placeholder="0,00"
                                 min="0"
