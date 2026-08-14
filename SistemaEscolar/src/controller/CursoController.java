@@ -1,8 +1,6 @@
 package controller;
 
 import java.io.IOException;
-//import java.sql.SQLException;
-//import java.util.List;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -13,184 +11,330 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import Classes.Curso;
-//import Classes.Aluno;
-//import model.AlunosModel;
 import service.CursoService;
 
 @WebServlet("/CursoController")
 public class CursoController extends HttpServlet {
 
-	 private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	    //private AlunosModel alunosModel;
-	    private CursoService CursoService;
+    private CursoService cursoService;
 
-	    public CursoController() {
-	        super();
-	    }
+    @Override
+    public void init() {
+        cursoService = new CursoService();
+    }
 
-	    @Override
-	    public void init() {
-	        //alunosModel = new AlunosModel();
-	    	CursoService = new CursoService();
-	    }
+    // =========================================================
+    // GET
+    // =========================================================
 
-	    @Override
-	    protected void doGet(
-	            HttpServletRequest request,
-	            HttpServletResponse response)
-	            throws ServletException, IOException {
-	    	
-	    	    String item      = request.getParameter("item");	
-	    	    String id 		 = request.getParameter("id");
-	    	    String nome      = request.getParameter("nome");
-	    	    String status    = request.getParameter("status");
-	    	    
-	    	    if ("pesquisar".equals(item)) {
+    @Override
+    protected void doGet( HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-	    	        try {
+        String item = request.getParameter("item");
 
-	    	            List<Curso> cursos;
+        if ("pesquisar".equals(item)) {
 
-	    	            String nomePesquisa = nome != null ? nome : "";
+            pesquisar(request, response);
 
-	    	            Boolean statusBoolean = null;
+        } else if ("statusCurso".equals(item)) {
 
-	    	            if (status != null && !status.isEmpty()) {
-	    	                statusBoolean = status.equals("1");
-	    	            }
+            alterarStatus(request, response);
 
-	    	            if (nomePesquisa.isEmpty() && statusBoolean == null) {
+        } else if ("delete".equals(item)) {
 
-	    	                cursos = CursoService.listarCursos();
+            deletar(request, response);
 
-	    	            } else {
+        } else {
 
-	    	                cursos = CursoService.pesquisarCurso(
-	    	                    nomePesquisa,
-	    	                    statusBoolean
-	    	                );
-	    	            }
+            listar(request, response);
+        }
+    }
 
-	    	            request.setAttribute("cursos", cursos);
+    // =========================================================
+    // POST
+    // =========================================================
 
-	    	            if (cursos.isEmpty()) {
+    @Override
+    protected void doPost(
+            HttpServletRequest request,
+            HttpServletResponse response)
+            throws ServletException, IOException {
 
-	    	                request.setAttribute("msg","Nenhum Curso encontrado!");
+        String item = request.getParameter("item");
 
-	    	            } else {
+        if ("editarCurso".equals(item)) {
 
-	    	                request.setAttribute("msg","Pesquisa realizada com sucesso!");
-	    	            }
-	    	            
-	    	            request.getRequestDispatcher("cursos.jsp").forward(request, response);
+            editar(request, response);
 
-	    	            return;
+        } else if ("cadastraCurso".equals(item)) {
 
-	    	        } catch (SQLException e) {
+            cadastrar(request, response);
 
-	    	            throw new ServletException(
-	    	                "Erro ao pesquisar Curso",
-	    	                e
-	    	            );
-	    	        }
-	    	    }
-	    	    
-	    	    if("statusCurso".equals(item)) {
-	    	    	try {
-	    	    		boolean alteraStatus = CursoService.alteraStatusCurso(Integer.parseInt(id), Boolean.parseBoolean(status));
-	    	    		if(alteraStatus) {
-	    	    			request.setAttribute("msg", "Status atualizado com Sucesso!");
-	    	    		}else {
-	    	    			request.setAttribute("msg", "Houve um problema na atualização do Status");
-	    	    		}
-	    	    	}catch(SQLException e) {
-	    	    		throw new ServletException( "Erro ao mudar Status - Curso", e );
-	    	    	}
-	    	    	
-	    	    	
-	    	    }
-	    	    
-	    	    if("delete".equals(item)) {
-	    	    	try {
-		    	    	boolean deleteCurso = CursoService.deleteCurso(Integer.parseInt(id));
-		    	    	if(deleteCurso) {
-		    	    		request.setAttribute("msg", "Curso apagado com sucesso!");
-		    	    	}else {
-		    	    		request.setAttribute("msg", "Erro ao apagar Curso");
-		    	    	}
-	    	    	}catch(SQLException e) {
-	    	    		throw new ServletException( "Erro ao apagar - Curso", e );
-	    	    	}
-	    	    }
-	    	    
-		    	try {
-		        	
-		        	List<Curso> cursos = CursoService.listarCursos();
-		        	request.setAttribute("cursos", cursos);
-		        	request.getRequestDispatcher("cursos.jsp").forward(request, response);
-		        	return;
-		        
-		        }catch(SQLException e) {
-		        	 throw new ServletException( "Erro ao trazer Cursos", e );
-		        }
-	    }
+        } else {
 
-	    @Override
-	    protected void doPost(
-	            HttpServletRequest request,
-	            HttpServletResponse response)
-	            throws ServletException, IOException {
+            listar(request, response);
+        }
+    }
 
-	        String item          = request.getParameter("item");
-	        
-	        String id            = request.getParameter("id");
-	        String nome 		 = request.getParameter("nome");
-	        String descricao	 = request.getParameter("descricao");
-	        String cargaHoraria  = request.getParameter("cargaHoraria");
-	        String valor		 = request.getParameter("valor");
-	        
-	        if("editarCurso".equals(item)) {
-	        	try {
-	        		
-	        		boolean updateCurso = CursoService.updateCurso(Integer.parseInt(id), nome, descricao, cargaHoraria, valor);
-	        		
-	        		if(updateCurso) {
-	        			request.setAttribute("msg", "Curso Atualizado com sucesso");
-	        		}else {
-	        			request.setAttribute("msg", "Houve um problema na atualização do Curso");
-	        		}
-	        	}catch(SQLException e) {
-	        		throw new ServletException( "Erro ao fazer o UPDATE - Cursos", e );
-	        	}
-	        }
-	        
-	        if("cadastraCurso".equals(item)) {
-	        	try {
-	        		
-	        		boolean insertCurso = CursoService.insertCurso(nome, descricao, cargaHoraria, valor);
-	        		
-	        		if(insertCurso) {	        			
-	        			request.setAttribute("msg", "Curso adicionando com Sucesso!");	        		
-	        		}else {
-	        			request.setAttribute("msg", "Houve um problema ao adicionar o Curso!");
-	        		}
-	        		
-	        	}catch(SQLException e) {
-	        		throw new ServletException( "Erro ao trazer Cursos", e );
-	        	}
-	        }
-	        
-	       try {
-	        	
-	        	List<Curso> cursos = CursoService.listarCursos();
-	        	request.setAttribute("cursos", cursos);
-	        	request.getRequestDispatcher("cursos.jsp").forward(request, response);
-	        	return;
-	        
-	        }catch(SQLException e) {
-	        	 throw new ServletException( "Erro ao trazer Cursos", e );
-	        }
-	    }
-	
+    // =========================================================
+    // MÉTODOS DO CONTROLLER
+    // =========================================================
+
+    private void listar(
+            HttpServletRequest request,
+            HttpServletResponse response)
+            throws ServletException, IOException {
+
+        try {
+
+            List<Curso> cursos = cursoService.listarCursos();
+
+            request.setAttribute("cursos", cursos);
+
+            request.getRequestDispatcher("cursos.jsp")
+                   .forward(request, response);
+
+        } catch (SQLException e) {
+
+            throw new ServletException(
+                "Erro ao trazer Cursos",
+                e
+            );
+        }
+    }
+
+    private void pesquisar(
+            HttpServletRequest request,
+            HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String nome = request.getParameter("nome");
+        String status = request.getParameter("status");
+
+        try {
+
+            String nomePesquisa = nome != null ? nome : "";
+
+            Boolean statusBoolean = null;
+
+            if (status != null && !status.isEmpty()) {
+                statusBoolean = status.equals("1");
+            }
+
+            List<Curso> cursos;
+
+            if (nomePesquisa.isEmpty() && statusBoolean == null) {
+
+                cursos = cursoService.listarCursos();
+
+            } else {
+
+                cursos = cursoService.pesquisarCurso(
+                    nomePesquisa,
+                    statusBoolean
+                );
+            }
+
+            request.setAttribute("cursos", cursos);
+
+            if (cursos.isEmpty()) {
+
+                request.setAttribute(
+                    "msg",
+                    "Nenhum Curso encontrado!"
+                );
+
+            } else {
+
+                request.setAttribute(
+                    "msg",
+                    "Pesquisa realizada com sucesso!"
+                );
+            }
+
+            request.getRequestDispatcher("cursos.jsp")
+                   .forward(request, response);
+
+        } catch (SQLException e) {
+
+            throw new ServletException(
+                "Erro ao pesquisar Curso",
+                e
+            );
+        }
+    }
+
+    private void alterarStatus(
+            HttpServletRequest request,
+            HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String id = request.getParameter("id");
+        String status = request.getParameter("status");
+
+        try {
+
+            boolean alterou = cursoService.alteraStatusCurso(
+                Integer.parseInt(id),
+                Boolean.parseBoolean(status)
+            );
+
+            if (alterou) {
+
+                request.setAttribute(
+                    "msg",
+                    "Status atualizado com sucesso!"
+                );
+
+            } else {
+
+                request.setAttribute(
+                    "msg",
+                    "Houve um problema na atualização do Status."
+                );
+            }
+
+            listar(request, response);
+
+        } catch (SQLException e) {
+
+            throw new ServletException(
+                "Erro ao mudar Status do Curso",
+                e
+            );
+        }
+    }
+
+    private void deletar(
+            HttpServletRequest request,
+            HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String id = request.getParameter("id");
+
+        try {
+
+            boolean deletou = cursoService.deleteCurso(
+                Integer.parseInt(id)
+            );
+
+            if (deletou) {
+
+                request.setAttribute(
+                    "msg",
+                    "Curso apagado com sucesso!"
+                );
+
+            } else {
+
+                request.setAttribute(
+                    "msg",
+                    "Erro ao apagar Curso."
+                );
+            }
+
+            listar(request, response);
+
+        } catch (SQLException e) {
+
+            throw new ServletException(
+                "Erro ao apagar Curso",
+                e
+            );
+        }
+    }
+
+    private void cadastrar(
+            HttpServletRequest request,
+            HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String nome = request.getParameter("nome");
+        String descricao = request.getParameter("descricao");
+        String cargaHoraria = request.getParameter("cargaHoraria");
+        String valor = request.getParameter("valor");
+
+        try {
+
+            boolean inseriu = cursoService.insertCurso(
+                nome,
+                descricao,
+                cargaHoraria,
+                valor
+            );
+
+            if (inseriu) {
+
+                request.setAttribute(
+                    "msg",
+                    "Curso adicionado com sucesso!"
+                );
+
+            } else {
+
+                request.setAttribute(
+                    "msg",
+                    "Houve um problema ao adicionar o Curso!"
+                );
+            }
+
+            listar(request, response);
+
+        } catch (SQLException e) {
+
+            throw new ServletException(
+                "Erro ao cadastrar Curso",
+                e
+            );
+        }
+    }
+
+    private void editar(
+            HttpServletRequest request,
+            HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String id = request.getParameter("id");
+        String nome = request.getParameter("nome");
+        String descricao = request.getParameter("descricao");
+        String cargaHoraria = request.getParameter("cargaHoraria");
+        String valor = request.getParameter("valor");
+
+        try {
+
+            boolean atualizou = cursoService.updateCurso(
+                Integer.parseInt(id),
+                nome,
+                descricao,
+                cargaHoraria,
+                valor
+            );
+
+            if (atualizou) {
+
+                request.setAttribute(
+                    "msg",
+                    "Curso atualizado com sucesso!"
+                );
+
+            } else {
+
+                request.setAttribute(
+                    "msg",
+                    "Houve um problema na atualização do Curso."
+                );
+            }
+
+            listar(request, response);
+
+        } catch (SQLException e) {
+
+            throw new ServletException(
+                "Erro ao fazer UPDATE do Curso",
+                e
+            );
+        }
+    }
 }
